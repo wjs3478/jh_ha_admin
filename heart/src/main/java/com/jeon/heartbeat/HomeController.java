@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +34,6 @@ public class HomeController {
 	@Autowired
 	AbstractDAO sql;
 	
-	
 	/**
 	 * Simply selects the home view to render by returning its name.
 	 */
@@ -47,7 +47,6 @@ public class HomeController {
 		String formattedDate = dateFormat.format(date);
 		
 		model.addAttribute("serverTime", formattedDate );
-		
 		return "home";
 	}
 	
@@ -115,6 +114,56 @@ public class HomeController {
 	    return jsonObject;
 	}
 	
+	
+	@RequestMapping(value = "/init_load.do", method = RequestMethod.GET)
+	public @ResponseBody Map<String,Object> initDo(HttpServletRequest request,  HttpServletResponse response) {
+		
+
+		Map<String, Object> jsonObject=new HashMap<String, Object>();
+		
+		
+		jsonObject.put("server1_name",ReadProperties.getInstance().getParameter("server1_name"));
+		jsonObject.put("server1_ip",ReadProperties.getInstance().getParameter("server1_ip"));
+		jsonObject.put("server1_id",ReadProperties.getInstance().getParameter("server1_id"));
+		//jsonObject.put("server1_pw",ReadProperties.getInstance().getParameter("server1_pw"));
+		jsonObject.put("server1_sync",ReadProperties.getInstance().getParameter("server1_sync"));
+		
+		jsonObject.put("server2_name",ReadProperties.getInstance().getParameter("server2_name"));
+		jsonObject.put("server2_ip",ReadProperties.getInstance().getParameter("server2_ip"));
+		jsonObject.put("server2_id",ReadProperties.getInstance().getParameter("server2_id"));
+		//jsonObject.put("server2_pw",ReadProperties.getInstance().getParameter("server2_pw"));
+		jsonObject.put("server2_sync",ReadProperties.getInstance().getParameter("server2_sync"));
+		
+		//jsonObject.put("ip"+c,ips[c]);
+		//jsonObject.put("length",+c+1);
+				
+
+		
+		return jsonObject;
+	}
+	
+	
+	@RequestMapping(value = "/setting.do", method = RequestMethod.GET)
+	public @ResponseBody int settingDo(HttpServletRequest request,  HttpServletResponse response) {
+		
+		int suc=0;
+		
+		String ip=request.getParameter("ip");
+		String id=request.getParameter("id");
+		String pw=request.getParameter("pw");
+		String sync=request.getParameter("sync");
+		String snum=request.getParameter("s_num");
+		
+		
+		suc=suc+ReadProperties.getInstance().setParameter("server"+snum+"_ip", ip);
+		suc=suc+ReadProperties.getInstance().setParameter("server"+snum+"_id", id);
+		suc=suc+ReadProperties.getInstance().setParameter("server"+snum+"_pw", pw);
+		suc=suc+ReadProperties.getInstance().setParameter("server"+snum+"_sync", sync);
+		
+		return suc;
+	}
+	
+	
 	@RequestMapping(value = "/ssh.do", method = RequestMethod.GET)
 	public @ResponseBody Map<String,Object> sshClient(HttpServletRequest request,  HttpServletResponse response) {
 		
@@ -124,12 +173,13 @@ public class HomeController {
 		String[] ips=null;
 		Map<String, Object> jsonObject=new HashMap<String, Object>();
 		
+		
 		System.out.println("==========================");
 		System.out.println(ip);
 		System.out.println(cmd);
 		System.out.println("==========================");
 		
-		SSHConnect sshAgent = new SSHConnect(ip, "root", "a1004zgp!");
+		SSHConnect sshAgent = new SSHConnect(ip, "", "stat!@");
 
 		try {
 			if( sshAgent.connect() ) 
@@ -138,7 +188,7 @@ public class HomeController {
 			
 				if(cmd.equals("ip"))
 				{
-					info = sshAgent.executeCommand("/home/test/monitor "+cmd);
+					info = sshAgent.executeCommand("/home/monitor "+cmd);
 					
 					ips=info.split("\n");
 					for(int c=0;c<ips.length;c++)
@@ -149,25 +199,25 @@ public class HomeController {
 					}
 				}else if(cmd.equals("cpu"))
 				{
-					info = sshAgent.executeCommand("/home/test/monitor "+cmd);
+					info = sshAgent.executeCommand("/home/monitor "+cmd);
 					System.out.println( "정보 : " + info );
 
 					jsonObject.put("data",info);
 
 				}else if(cmd.equals("os"))
 				{
-					info = sshAgent.executeCommand("/home/test/monitor "+cmd);
+					info = sshAgent.executeCommand("/home/monitor "+cmd);
 					System.out.println( "정보 : " + info );
 					jsonObject.put("os",info);
 					
 				}else if(cmd.equals("mem"))
 				{
-					info = sshAgent.executeCommand("/home/test/monitor "+cmd);
+					info = sshAgent.executeCommand("/home/monitor "+cmd);
 					System.out.println( "정보 : " + info );
 					jsonObject.put("data",info);
 				}else if(cmd.equals("dh"))
 				{
-					info = sshAgent.executeCommand("/home/test/monitor "+cmd);
+					info = sshAgent.executeCommand("/home/monitor "+cmd);
 					System.out.println( "정보 : " + info );
 					jsonObject.put("data",info);
 				}else if(cmd.equals("standby"))

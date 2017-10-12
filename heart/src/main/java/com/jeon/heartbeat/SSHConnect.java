@@ -274,26 +274,30 @@ public class SSHConnect {
 
         {
 
-            SSHConnect sshAgent = new SSHConnect( "192.168.112.2", "root", 
+            SSHConnect sshAgent = new SSHConnect( "192.168.23.130", "stat", 
 
-                                                               "a1004zgp!" );
+                                                               "stat!@" );
 
             if( sshAgent.connect() ) 
 
             {
 
-                String diskInfo = sshAgent.executeCommand( "ls" );
+                //String diskInfo = sshAgent.executeCommand( "ls" );
 
-                System.out.println( "디스크 정보 : " + diskInfo );
-
-                
-
-                String processInfo = sshAgent.executeCommand( "/home/test/monitor ip" );
-
-                System.out.println( "프로세스 정보 : " + processInfo );
+                //System.out.println( "디스크 정보 : " + diskInfo );
 
                 
 
+                //String processInfo = sshAgent.executeCommand( "/home/test/monitor ip" );
+
+            	String pe=sshAgent.executeCommand("/etc/ha.d/hb_standby");
+                System.out.println( "프로세스 정보 : " + pe );
+
+                sshAgent.executeCommand("su -");
+                sshAgent.executeCommand("stat!@");
+
+                String ps=sshAgent.executeCommand("/etc/ha.d/hb_standby");
+                System.out.println(ps);
                 // 로그아웃
 
                 sshAgent.logout();

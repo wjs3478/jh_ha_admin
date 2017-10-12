@@ -328,19 +328,71 @@
 
 
 <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
-    <li id="standby"><a tabindex="-1" >stand by</a></li>
+    <li id="standby"><a tabindex="-1" >fail over</a></li>
     <li><a tabindex="-1" href="#">cpu info</a></li>
     <li><a tabindex="-1" href="#">os info</a></li>
     <li><a tabindex="-1" href="#">disk info</a></li>
     <!-- <li class="divider"></li> -->
     <li><a tabindex="-1" href="#">memory info</a></li>
+    <li><a tabindex="-1" href="#">setting</a></li>
 </ul>
+
+
+<div class="modal fade"  id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 id="svm" class="modal-title">Setting</h4>
+      </div>
+      <div class="modal-body">
+      <form class="form-horizontal">
+    
+        <div class="form-group">
+        	<label for="IP1" class="col-sm-2 control-label">IP</label>
+        	<div class="col-sm-10"> 
+        		<input id="serverip" type="text" class="form-control" placeholder="IP address">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="ID1" class="col-sm-2 control-label">ID</label>
+        	<div class="col-sm-10"> 
+        		<input id="serverid" type="text" class="form-control" placeholder="ID">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="PASS1" class="col-sm-2 control-label">PASSWORD</label>
+        	<div class="col-sm-10"> 
+        		<input id="serverpw" type="password" class="form-control" placeholder="PASSWORD">
+        	</div>
+        </div>
+
+        <div class="form-group">
+        	<label for="SYNC1" class="col-sm-2 control-label">SYNC</label>
+        	<div class="col-sm-10"> 
+        		<input id="serversync" type="text" class="form-control" placeholder="SYNC">
+        	</div>
+        </div>
+        
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="save_set" type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 
    
    <script>
+	var data="";
 	var c=0;
-	
+	var s_num=0;
 	 (function ($, window) {
 
 	    $.fn.contextMenu = function (settings) {
@@ -353,8 +405,10 @@
 	                
 	                if (e.ctrlKey) return;
 	                
+	                //console.log(e);
 	                var ip=e.currentTarget.innerText;
-	                console.log(e.currentTarget.className);
+	                var server=e.currentTarget.id
+	                //console.log(e.currentTarget.className);
 	                if(e.currentTarget.className=='active')
 	                {
 	                	$("#standby").removeClass();
@@ -366,6 +420,7 @@
 	                //open menu
 	                var $menu = $(settings.menuSelector)
 	                    .data("invokedOn", ip)
+	                    .data("server",server)
 	                    .show()
 	                    .css({
 	                        position: "absolute",
@@ -379,11 +434,12 @@
 	                    	
 	                        $menu.hide();
 	                        var $invokedOn = $menu.data("invokedOn");
+	                        var $server = $menu.data("server");
 	                        var $selectedMenu = $(e.target);
 	                        
 	                        //var $clas=$(e.target.className);
 	                        
-	                        settings.menuSelected.call(this, $invokedOn, $selectedMenu);
+	                        settings.menuSelected.call(this, $invokedOn, $selectedMenu,$server);
 	                    });
 	                
 	                return false;
@@ -423,26 +479,29 @@
    $(document).ready(
 		   function(){
 			   		   
-				   makeImg('192.168.112.2');
-				   makeImg('192.168.112.3');
-				   
+				  // makeImg('192.168.23.130');
+				 // makeImg('192.168.23.131');
+				   fun_init();
 				   //$("#box")
 				  
 				   $("#adding").bind("click",review);
+				   $("#save_set").bind("click",save_setting);
 				   //$("#adding").bind("click",cpuinfo);
 				  // review();
 				  //setInterval(review,60000);
 		   }
    );
    
-   function context_excute(invokedOn, selectedMenu)
+   function context_excute(invokedOn, selectedMenu,server)
    {
 	   
 	  /*  var msg = "You selected the menu item '" + selectedMenu.text() +
        "' on the value '" + invokedOn + "'";
    	alert(msg); */
+   		//console.log(server);
    		var cmd=selectedMenu.text().trim();
    		var ip=invokedOn.trim();
+   		s_num=server.substr(server.length-1,1);
    		if(cmd=='cpu info')
    		{
    			ssh_test(ip,"cpu");	
@@ -455,12 +514,89 @@
    		}else if(cmd=='memory info')
    		{
    			ssh_test(ip,"mem");
-   		}else if(cmd=='stand by')
+   		}else if(cmd=='fail over')
    		{
    			ssh_test(ip,"standby");
+   		}else if(cmd=='setting')
+   		{
+   			//console.log(ip);
+   			$('#serverip').val(ip);
+   			
+   			if(data.server1_ip==ip)
+   			{
+   				$('#serverid').val(data.server1_id);
+   				$('#serverpw').val('');
+   				$('#serversync').val(data.server1_sync);
+   			}
+   				
+   			$('#myModal').modal({backdrop: 'static'}) ;
+   			$('#myModal').modal('show');
+   			
+   			
    		}
    }
    
+   
+   
+   function fun_init()
+   {
+	   
+		    $.ajax({
+		        url : "../../init_load.do",
+		        type: "get",
+   
+		        success : function(responseData){
+		            //$("#ajax").remove();
+		            data=responseData;
+		            console.log(data);
+		            
+		            
+		            makeImg(data.server1_ip);
+		            makeImg(data.server2_ip);
+		        }
+		    });
+		
+   }
+   
+   function save_setting()
+   {
+	   
+	   if($("#serverpw").val()=='' || $("#serverpw").val()==null)
+		{
+		 	alert("비밀번호를 입력해주세요");
+		 	return;
+		}
+	   
+	    $.ajax({
+	        url : "../../setting.do",
+	        type: "get",
+	        data:{
+	        	"ip" : $("#serverip").val(),
+	        	"id" : $("#serverid").val(),
+	        	"pw" : $("#serverpw").val(),
+	        	"sync" : $("#serversync").val(),
+	        	"s_num" : s_num
+	        	
+	        },
+
+	        success : function(responseData){
+	            //$("#ajax").remove();
+	            //data=responseData;
+	            console.log(responseData);
+	            if(responseData==0){
+	            	alert("성공적으로 저장되었습니다.");
+	            	$('#myModal').modal('hide');
+	            	window.location.reload();
+	            }else
+	            {
+	            	alert("저장에 실패했습니다.");
+	            }
+	            
+	           // makeImg(data.server1_ip);
+	           // makeImg(data.server2_ip);
+	        }
+	    });
+   }
    
    function ssh_test(ip,cmd,box)
    {
@@ -514,7 +650,7 @@
    
    function cpuinfo()
    {
-	   ssh_test('192.168.112.2',"cpu");
+	   ssh_test('192.168.23.130',"cpu");
    }
    
    
