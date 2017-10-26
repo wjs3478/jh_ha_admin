@@ -153,26 +153,28 @@ public class SSHConnect {
             // 세션 생성
 
             Session session = connection.openSession();
-
+            //session.startShell();
             
 
             // command 실행
 
             session.execCommand( command );
 
+            System.out.println(command);
             
+            //session.execCommand("cat /opt/haadmin.log");
 
             // 결과 확인
 
             StringBuilder sb = new StringBuilder();
 
             InputStream stdout = new StreamGobbler( session.getStdout() );
+            
 
-            BufferedReader br = new BufferedReader(new 
-
-                                             InputStreamReader(stdout));
+            BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
 
             String line = br.readLine();
+            
 
             while( line != null )
 
@@ -181,6 +183,8 @@ public class SSHConnect {
                 sb.append( line + "\n" );
 
                 line = br.readLine();
+                
+                System.out.println("시바"+line);
 
             }
 
@@ -199,7 +203,8 @@ public class SSHConnect {
             
 
             // 호출자에게 결과를 반환
-
+            //System.out.println(sb.toString());
+            
             return sb.toString();
 
         }
@@ -274,9 +279,9 @@ public class SSHConnect {
 
         {
 
-            SSHConnect sshAgent = new SSHConnect( "192.168.23.130", "stat", 
+            SSHConnect sshAgent = new SSHConnect( "192.168.23.130", "haadmin", 
 
-                                                               "stat!@" );
+                                                               "admin123" );
 
             if( sshAgent.connect() ) 
 
@@ -287,16 +292,19 @@ public class SSHConnect {
                 //System.out.println( "디스크 정보 : " + diskInfo );
 
                 
-
+            	
+            	
                 //String processInfo = sshAgent.executeCommand( "/home/test/monitor ip" );
 
-            	String pe=sshAgent.executeCommand("/etc/ha.d/hb_standby");
+            	String pe=sshAgent.executeCommand("/opt/haadmin/monitor ip");
+            	//sshAgent.executeCommand("cat /opt/haadmin/haadmin.log");
                 System.out.println( "프로세스 정보 : " + pe );
 
-                sshAgent.executeCommand("su -");
-                sshAgent.executeCommand("stat!@");
+                //System.out.println(sshAgent.executeCommand("ps -ef | grep tomcat"));
+                //sshAgent.executeCommand("su -");
+                //sshAgent.executeCommand("stat!@");
 
-                String ps=sshAgent.executeCommand("/etc/ha.d/hb_standby");
+                String ps=sshAgent.executeCommand("/opt/haadmin/monitor os");
                 System.out.println(ps);
                 // 로그아웃
 

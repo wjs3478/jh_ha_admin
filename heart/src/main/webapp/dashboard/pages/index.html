@@ -314,7 +314,26 @@
 
 	<div id="page-wrapper">
 		<br>
-        <button id="adding" class="btn btn-default" type="submit">새로고침</button>
+        <button id="adding" class="btn btn-default">새로고침</button>
+        <button id="data_sync" class="btn btn-default"  data-sh-text="<span class='glyphicon glyphicon-pause' aria-hidden='true'></span> 데이터 동기화 중지" aria-pressed="false">
+        	<span class="glyphicon glyphicon-play" aria-hidden="true"></span> 데이터 동기화 실행
+        </button>
+        <button id="vip_set" class="btn btn-default">
+        	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> 가상IP 설정</button>
+        <div class="checkbox">
+		  <label>
+		    <input name="synck" type="checkbox" id="ck1" value="1">
+		    SYNC1
+		  </label>
+		</div>
+		<div class="checkbox">
+		  <label>
+		    <input name="synck" type="checkbox" id="ck2" value="2">
+		    SYNC2
+		  </label>
+		</div>
+        
+                
         <br>
         <br>
         <br>
@@ -335,6 +354,7 @@
     <!-- <li class="divider"></li> -->
     <li><a tabindex="-1" href="#">memory info</a></li>
     <li><a tabindex="-1" href="#">setting</a></li>
+    <li><a tabindex="-1" href="#">sync setting</a></li>
 </ul>
 
 
@@ -369,13 +389,7 @@
         	</div>
         </div>
 
-        <div class="form-group">
-        	<label for="SYNC1" class="col-sm-2 control-label">SYNC</label>
-        	<div class="col-sm-10"> 
-        		<input id="serversync" type="text" class="form-control" placeholder="SYNC">
-        	</div>
-        </div>
-        
+                
         </form>
       </div>
       <div class="modal-footer">
@@ -385,6 +399,129 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+
+
+<div class="modal fade"  id="dataSyn">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 id="svm" class="modal-title">sync dir</h4>
+      </div>
+      <div class="modal-body">
+      <form class="form-horizontal">
+    
+        <div class="form-group">
+        	<label for="syncor1" class="col-sm-3 control-label">origin dir1</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncto1" type="text" class="form-control" placeholder="sync origin dir">
+        	</div>
+        </div>
+        
+         <div class="form-group">
+        	<label for="syncre1" class="col-sm-3 control-label">remote dir1</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncfrom1" type="text" class="form-control" placeholder="sync remote dir">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="syncID1" class="col-sm-3 control-label">remoteID1</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncid1" type="text" class="form-control" placeholder="remote ID">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="syncPASS1" class="col-sm-3 control-label">remotePW1</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncpw1" type="password" class="form-control" placeholder="remote PASSWORD">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="syncor2" class="col-sm-3 control-label">origin dir2</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncto2" type="text" class="form-control" placeholder="sync origin dir">
+        	</div>
+        </div>
+        
+         <div class="form-group">
+        	<label for="syncre2" class="col-sm-3 control-label">remote dir2</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncfrom2" type="text" class="form-control" placeholder="sync remote dir">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="syncID2" class="col-sm-3 control-label">remoteID2</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncid2" type="text" class="form-control" placeholder="remote ID">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="syncPASS2" class="col-sm-3 control-label">remotePW2</label>
+        	<div class="col-sm-9"> 
+        		<input id="syncpw2" type="password" class="form-control" placeholder="remote PASSWORD">
+        	</div>
+        </div>
+        
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="sync_set" type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div class="modal fade"  id="vip_setting">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 id="svm" class="modal-title">Setting</h4>
+      </div>
+      <div class="modal-body">
+      <form class="form-horizontal">
+    
+        <div class="form-group">
+        	<label for="sv_IP1" class="col-sm-2 control-label">IP1</label>
+        	<div class="col-sm-10"> 
+        		<input id="sv1ip_set" type="text" class="form-control" placeholder="Server1 IP address">
+        	</div>
+        </div>
+        
+        <div class="form-group">
+        	<label for="sv_IP2" class="col-sm-2 control-label">IP2</label>
+        	<div class="col-sm-10"> 
+        		<input id="sv2ip_set" type="text" class="form-control" placeholder="Server2 IP address">
+        	</div>
+        </div>
+
+        <div class="form-group">
+        	<label for="VIP" class="col-sm-2 control-label">Virtual IP</label>
+        	<div class="col-sm-10"> 
+        		<input id="vip_set_text" type="text" class="form-control" placeholder="Virtual IP">
+        	</div>
+        </div>
+        
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="save_vip" type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 
 
 
@@ -469,12 +606,6 @@
 	
 	
 	
-	
-   function tes(){
-
-		   alert( "Handler for .contextmenu() called." );	 
-   }
-	
    
    $(document).ready(
 		   function(){
@@ -485,7 +616,20 @@
 				   //$("#box")
 				  
 				   $("#adding").bind("click",review);
+				   
 				   $("#save_set").bind("click",save_setting);
+				   $("#sync_set").bind("click",sync_setting);
+				   $("#save_vip").bind("click",vip_save);
+				   $("#data_sync").bind("click",sync);
+				   $("#vip_set").bind("click",function(){
+					   
+					   $('#sv1ip_set').val(data.server1_ip);
+					   $('#sv2ip_set').val(data.server2_ip);
+					   $('#vip_set_text').val(data.sv_vip);
+					   $('#vip_setting').modal({backdrop: 'static'}) ;
+			   			$('#vip_setting').modal('show');
+				   });
+				   				   
 				   //$("#adding").bind("click",cpuinfo);
 				  // review();
 				  //setInterval(review,60000);
@@ -500,23 +644,26 @@
    	alert(msg); */
    		//console.log(server);
    		var cmd=selectedMenu.text().trim();
+   		
    		var ip=invokedOn.trim();
+   		
    		s_num=server.substr(server.length-1,1);
+   		
    		if(cmd=='cpu info')
    		{
-   			ssh_test(ip,"cpu");	
+   			ssh_test(ip,"cpu",s_num);	
    		}else if(cmd=='os info')
    		{
-   			ssh_test(ip,"os");
+   			ssh_test(ip,"os",s_num);
    		}else if(cmd=='disk info')
    		{
-   			ssh_test(ip,"dh");
+   			ssh_test(ip,"dh",s_num);
    		}else if(cmd=='memory info')
    		{
-   			ssh_test(ip,"mem");
+   			ssh_test(ip,"mem",s_num);
    		}else if(cmd=='fail over')
    		{
-   			ssh_test(ip,"standby");
+   			ssh_test(ip,"standby",s_num);
    		}else if(cmd=='setting')
    		{
    			//console.log(ip);
@@ -527,12 +674,44 @@
    				$('#serverid').val(data.server1_id);
    				$('#serverpw').val('');
    				$('#serversync').val(data.server1_sync);
+   			}else
+   			{
+   				$('#serverid').val(data.server2_id);
+   				$('#serverpw').val('');
+   				$('#serversync').val(data.server2_sync);
    			}
    				
    			$('#myModal').modal({backdrop: 'static'}) ;
    			$('#myModal').modal('show');
    			
    			
+   		}else if(cmd=='sync setting')
+   		{
+   			
+   			
+   			
+			//$('#serverip').val(ip);
+   			
+   			if(data.server1_ip==ip)
+   			{
+   				$('#syncto1').val(data.sv1_sync1_origin_dir);
+   				$('#syncfrom1').val(data.sv1_sync1_remote_dir);
+   				$('#syncid1').val(data.sv1_sync1_remote_id);
+   				$('#syncto2').val(data.sv1_sync2_origin_dir);
+   				$('#syncfrom2').val(data.sv1_sync2_remote_dir);
+   				$('#syncid2').val(data.sv1_sync2_remote_id);
+   			}else
+   			{
+   				$('#syncto1').val(data.sv2_sync1_origin_dir);
+   				$('#syncfrom1').val(data.sv2_sync1_remote_dir);
+   				$('#syncid1').val(data.sv2_sync1_remote_id);
+   				$('#syncto2').val(data.sv2_sync2_origin_dir);
+   				$('#syncfrom2').val(data.sv2_sync2_remote_dir);
+   				$('#syncid2').val(data.sv2_sync2_remote_id);
+   			}
+   				
+   			$('#dataSyn').modal({backdrop: 'static'}) ;
+   			$('#dataSyn').modal('show');
    		}
    }
    
@@ -542,7 +721,7 @@
    {
 	   
 		    $.ajax({
-		        url : "../../init_load.do",
+		        url : "../../init_load.tdo",
 		        type: "get",
    
 		        success : function(responseData){
@@ -558,6 +737,8 @@
 		
    }
    
+   
+   
    function save_setting()
    {
 	   
@@ -568,13 +749,13 @@
 		}
 	   
 	    $.ajax({
-	        url : "../../setting.do",
-	        type: "get",
+	        url : "../../setting.tdo",
+	        type: "post",
 	        data:{
 	        	"ip" : $("#serverip").val(),
 	        	"id" : $("#serverid").val(),
 	        	"pw" : $("#serverpw").val(),
-	        	"sync" : $("#serversync").val(),
+	        	//"sync" : $("#serversync").val(),
 	        	"s_num" : s_num
 	        	
 	        },
@@ -598,14 +779,188 @@
 	    });
    }
    
-   function ssh_test(ip,cmd,box)
+   function vip_save()
    {
 	   
+	   
+	    $.ajax({
+	        url : "../../vip_save.tdo",
+	        type: "post",
+	        data:{
+	        	"ip1" : $("#sv1ip_set").val(),
+	        	"ip2" : $("#sv2ip_set").val(),
+	        	"vip" : $("#vip_set_text").val()
+	        	//"sync" : $("#serversync").val(),
+	        	
+	        },
+
+	        success : function(responseData){
+	            //$("#ajax").remove();
+	            //data=responseData;
+	            console.log(responseData);
+	            if(responseData==0){
+	            	alert("성공적으로 저장되었습니다.");
+	            	$('#vip_setting').modal('hide');
+	            	window.location.reload();
+	            }else
+	            {
+	            	alert("저장에 실패했습니다.");
+	            }
+	            
+	           // makeImg(data.server1_ip);
+	           // makeImg(data.server2_ip);
+	        }
+	    });
+   }
+   
+   function sync_setting()
+   {
+	   
+	   $.ajax({
+	        url : "../../sync_setting.tdo",
+	        type: "post",
+	        data:{
+	        	"s_num" : s_num,
+	        	"sync1_origin" : $("#syncto1").val(),
+	        	"sync1_remote" : $("#syncfrom1").val(),
+	        	"sync1_id" : $("#syncid1").val(),
+	        	"sync1_pw" : $("#syncpw1").val(),
+	        	"sync2_origin" : $("#syncto2").val(),
+	        	"sync2_remote" : $("#syncfrom2").val(),
+	        	"sync2_id" : $("#syncid2").val(),
+	        	"sync2_pw" : $("#syncpw2").val()
+	        },
+
+	        success : function(responseData){
+	            //$("#ajax").remove();
+	            //data=responseData;
+	            console.log(responseData);
+	            if(responseData==0){
+	            	alert("성공적으로 저장되었습니다.");
+	            	$('#dataSyn').modal('hide');
+	            	window.location.reload();
+	            }else
+	            {
+	            	alert("저장에 실패했습니다.");
+	            }
+	            
+	           // makeImg(data.server1_ip);
+	           // makeImg(data.server2_ip);
+	        }
+	    });
+   }
+   
+   function sync(){
+	   
+	   var ck=getCheck("synck");
+	   
+	   if(ck=="")
+	   {
+			alert("동기화 할 목록을 체크해주세요");
+			return;
+	   }
+	   
+	   
+	   var txt=$("#data_sync").text().trim();
+	   
+	   if(txt=="데이터 동기화 실행")
+		{
+			sync_play(ck);
+			$("#data_sync").button("sh");
+		}else
+		{
+			sync_stop();
+			$("#data_sync").button("reset");
+		}
+	   
+   }
+   
+   function getCheck(name)
+   {  //$("input[name='synck']:checked")
+	   var cbox=$("input[name='"+name+"']:checked");
+   
+   	   var max=cbox.length;
+   	   
+   	   if(max<1)
+   		{
+   			return "";   
+   		}
+   	   
+   	   var result="";
+	   
+   		for(var i=0;i<max;i++)
+   		{
+   			//console.log(d);
+			//console.log(cbox[i].value);
+			result=result+cbox[i].value+",";
+   		}
+   		
+   		result=result.substr(0,result.length-1);
+   		
+   		return result;
+   		
+   }
+   
+   
+   function sync_play(ck)
+   {
+	   review();
+	   
+	   
+	   var pri=$("#imagebox_1.active, #imagebox_2.active");
+	   
+	   if(pri.length>0 && pri.length<2)
+	   {
+		   
+	   		var activenum=pri[0].id.substr(pri[0].id.length-1,1);;
+	   
+		   $.ajax({
+		        url : "../../sync_play.tdo",
+		        type: "post",
+		        data:{
+		        	"s_num" : activenum,
+		        	"check" : ck
+		        },
+	
+		        success : function(responseData){
+		            //$("#ajax").remove();
+		            //data=responseData;
+		            console.log(responseData);
+	 
+		        }
+		    });
+	   
+		}else
+		{
+			alert("동기화를 실행할 수 없습니다.");	
+		}
+   }
+   
+   function sync_stop(){
+	   $.ajax({
+	        url : "../../sync_stop.tdo",
+	        type: "post",
+	        
+	        success : function(responseData){
+	            //$("#ajax").remove();
+	            //data=responseData;
+	            console.log(responseData);
+
+	        }
+	    });
+	   
+   }
+   
+   
+   function ssh_test(ip,cmd,sn,box)
+   {
 		    $.ajax({
-		        url : "../../ssh.do",
+		        url : "../../ssh.tdo",
 		        type: "get",
+		        async: false,
 		        data : { "ip" : ip,
-		        		  "cmd" : cmd},
+		        		  "cmd" : cmd,
+		        		  "s_num" : sn},
 		      
 		        success : function(responseData){
 		            //$("#ajax").remove();
@@ -618,33 +973,43 @@
 		            		//box.children("h3").children("span").attr("class","label label-primary");
 		            		box.innerHTML=box.innerHTML.replace("label label-danger","label label-primary");
 		            		box.setAttribute("class",'active');
-		            		console.log("ㅋㅋㅋㅋ");
+		            		//console.log("ㅋㅋㅋㅋ");
 		            	}else
 		            	{
 		            		//box.children("h3").children("span").attr("class","label label-danger");
 		            		box.innerHTML=box.innerHTML.replace("label label-primary","label label-danger");
 		            		box.removeAttribute("class");
-		            		console.log("ㅋㅋㅋㅋ2");
+		            		//console.log("ㅋㅋㅋㅋ2");
 		            	}
 		            	
-			            }else if(cmd=="cpu")
-			            {
-			            	alert(data.data);	
-			            }else if(cmd=="os")
-			            {
-			            	alert(data.os);
-			            }else if(cmd=="mem")
-			            {
-			            	alert(data.data);
-			            }else if(cmd=="df")
-			            {
-			            	alert(data.data);
-			            }else if(cmd=="standby")
-			            {
-			            	alert("성공했음");	
-			            }
-			        }
+		            	if(data.sync_state==true)
+		            	{
+		            		$("#data_sync").button("reset");
+		            	}else
+		            	{
+		            		$("#data_sync").button("sh");
+		            	}
+		            	
+		            }else if(cmd=="cpu")
+		            {
+		            	alert(data.data);	
+		            }else if(cmd=="os")
+		            {
+		            	alert(data.os);
+		            }else if(cmd=="mem")
+		            {
+		            	alert(data.data);
+		            }else if(cmd=="dh")
+		            {
+		            	alert(data.data);
+		            }else if(cmd=="standby")
+		            {
+		            	alert("성공했음");	
+		            }
+		        }
 		    });
+		    
+		    //console.log("언제 실행");
 		
    }
    
@@ -661,9 +1026,7 @@
 		   var temp=$("#box").children()[i];
 		   var ip=temp.innerText.trim();
 		   console.log(ip);
-		   var data=ssh_test(ip,"ip",temp);
-	
-		   
+		   var data=ssh_test(ip,"ip",i+1,temp)
 		}
    }
    
@@ -671,7 +1034,7 @@
    {
 	   $("#adding").bind("click",function(){
 		    $.ajax({
-		        url : "../../test.do",
+		        url : "../../test.tdo",
 		        type: "get",
 		        data : { 
 		        	"sql" : 'query.test',
@@ -723,6 +1086,7 @@
 	       		//img.align="right"	
 	       		//lb="<h3><span class='label label-primary' align='right'>"+ip+"</span></h3>";
 	       		lb="<h3><span class='label label-primary'>"+ip+"</span></h3>";
+	       		//lb="<h3><span id=lblb"+c+" class='label label-primary'>"+ip+"</span></h3>";
 	       		div.align="right";
 	       	}
 	       //document.body.appendChild(img);
