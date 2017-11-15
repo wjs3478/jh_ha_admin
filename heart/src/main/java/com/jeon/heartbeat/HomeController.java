@@ -33,7 +33,8 @@ public class HomeController {
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 	
 	private ExecutorService exc;
-	private Boolean syncState=false;
+	//private Boolean syncState=false;
+	private Boolean monState=false;
 	 
 	@Autowired
 	AbstractDAO sql;
@@ -287,7 +288,7 @@ public class HomeController {
 	public @ResponseBody int sync_playDo(HttpServletRequest request,  HttpServletResponse response) {
 		
 
-		
+		//exc.shutdownNow();
 		if(exc!=null)
 		{
 			return 1;
@@ -345,14 +346,55 @@ public class HomeController {
 		return 0;
 	}
 	
+	@RequestMapping(value = "/webConsole.tdo", method = RequestMethod.POST)
+	public @ResponseBody Map<String,Object> webConsole(HttpServletRequest request,  HttpServletResponse response) {
+		
+
+		String cmd=request.getParameter("cmd");
+		String ckl=request.getParameter("check");
+		Map<String, Object> jsonObject=new HashMap<String, Object>();
+		
+		String[] ar=ckl.split(",");
+		
+		
+		for(int i=0;i<ar.length;i++)
+		{
+			String ip=ReadProperties.getInstance().getParameter("server"+ar[i]+"_ip");
+			String id=ReadProperties.getInstance().getParameter("server"+ar[i]+"_id");
+			String pw=ReadProperties.getInstance().getParameter("server"+ar[i]+"_pw");
+
+			SSHConnect2 sshAgent2 = new SSHConnect2(ip, id, pw);
+			
+			try {
+				if(sshAgent2.connect() )
+				{
+					String info=sshAgent2.executeCommand(cmd);
+					jsonObject.put("ip"+ar[i],ip);
+					jsonObject.put("result"+ar[i], info.split("\n"));
+					jsonObject.put("length", i+1);
+					//jsonObject.put("ip",ip);
+					//jsonObject.put("result", info.split("\n"));
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			sshAgent2.logout();
+		}
+		
+		return jsonObject;
+	}
+	
 	@RequestMapping(value = "/sync_stop.tdo", method = RequestMethod.POST)
 	public @ResponseBody int sync_stopDo(HttpServletRequest request,  HttpServletResponse response) 
 	{
 		
-		if(exc==null)
+		/*if(exc==null)
 		{
 			return 1;
-		}
+		}*/
 		
 		exc.shutdownNow();
 		exc=null;
@@ -360,6 +402,101 @@ public class HomeController {
 		//System.out.println("시바 뭐야");
 		
 		return 0;
+	}
+	
+	
+	@RequestMapping(value = "/sync_stat.tdo", method = RequestMethod.GET)
+	public @ResponseBody int syncStat(HttpServletRequest request,  HttpServletResponse response) {
+		
+		int sync_stat=0;
+		
+		if(exc==null)
+		{
+			sync_stat=1;
+		}
+	
+		return sync_stat;
+	}
+	
+	@RequestMapping(value = "/lock_stat.tdo", method = RequestMethod.GET)
+	public @ResponseBody Map<String,Object> lockStat(HttpServletRequest request,  HttpServletResponse response) {
+		
+	
+		int lock_stat=0;
+		Map<String, Object> jsonObject=new HashMap<String, Object>();
+		
+		String cmd1="sudo service mon status";
+		String cmd2="sudo service heartbeat status";
+		
+		int re=0;
+		
+		for(int i=1;i<3;i++)
+		{
+			String ip=ReadProperties.getInstance().getParameter("server"+i+"_ip");
+			String id=ReadProperties.getInstance().getParameter("server"+i+"_id");
+			String pw=ReadProperties.getInstance().getParameter("server"+i+"_pw");
+			
+			SSHConnect2 sshAgent3 = new SSHConnect2(ip, id, pw);
+			//System.out.println("================");
+			//System.out.println("이거 다시 해와" + i);
+			//System.out.println("이거 다시 해와" + ip);
+			//System.out.println("이거 다시 해와" + id);
+			//System.out.println("이거 다시 해와" + pw);
+			//System.out.println("================");
+			try {
+				if( sshAgent3.connect() )
+				{
+					String info=sshAgent3.executeCommand(cmd1);
+
+					if(info.contains("pid"))
+					{
+						//lock_stat=1;
+						jsonObject.put("lock_stat", "1");
+					}
+					
+					
+					info=sshAgent3.executeCommand(cmd2);
+					if(info.contains("pid"))
+					{
+						//lock_stat=1;
+						re=re+1;
+					}
+					
+					
+					String[] ips=null;
+					
+					info = sshAgent3.executeCommand("/opt/haadmin/monitor.sh ip");
+						
+					ips=info.split("\n");
+					
+					
+					if(ips.length>1)
+					{
+						jsonObject.put("ip", ips[0]);
+						System.out.println(ips[0]);
+						
+					}
+					
+					/*for(int c=0;c<ips.length;c++)
+					{
+						//System.out.println( "정보 : " + ips[c] );
+						jsonObject.put("ip"+c,ips[c]);
+						jsonObject.put("length",+c+1);
+					}*/
+					
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			sshAgent3.logout();
+		}
+		
+		jsonObject.put("link_status", re);
+		
+		return jsonObject;
 	}
 	
 	
@@ -390,20 +527,7 @@ public class HomeController {
 			
 			{
 			
-				if(cmd.equals("ip"))
-				{
-					info = sshAgent.executeCommand("/opt/haadmin/monitor.sh "+cmd);
-					
-					ips=info.split("\n");
-					for(int c=0;c<ips.length;c++)
-					{
-						//System.out.println( "정보 : " + ips[c] );
-						jsonObject.put("ip"+c,ips[c]);
-						jsonObject.put("length",+c+1);
-					}
-					
-						jsonObject.put("sync_state", exc==null);
-				}else if(cmd.equals("cpu"))
+				if(cmd.equals("cpu"))
 				{
 					info = sshAgent.executeCommand("/opt/haadmin/monitor.sh "+cmd);
 					//System.out.println( "정보 : " + info );
@@ -435,7 +559,15 @@ public class HomeController {
 					
 					info=sshAgent.executeCommand("sudo /etc/ha.d/hb_standby");
 					jsonObject.put("data",info);
-				}			
+				}else if(cmd.equals("lock"))
+				{
+					info=sshAgent.executeCommand("sudo service mon stop");
+					jsonObject.put("data","stop");
+				}else if(cmd.equals("unlock"))
+				{
+					info=sshAgent.executeCommand("sudo service mon start");
+					jsonObject.put("data","running");
+				}
 			
 			// 로그아웃
 			//response.getWriter().println(jsonObject);

@@ -48,7 +48,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">SB Admin v2.0</a>
+                <a class="navbar-brand" href="index.html">HA-Admin</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -332,19 +332,52 @@
 		    SYNC2
 		  </label>
 		</div>
+                        
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
         
-                
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
         <div id="box" style="display:flex;">
+        
+	        <div id="linkbox" style="flex:2" align="center">
+	        	<h3><span id="link_stat" class="label label-success">Link Success</span></h3>
+	        	<hr id="link_solid" style="border: solid 5px green;">
+	        </div>
         </div>
+        <br>
+        <br>
+        <div id="page-footer">
+	   		<form class="form-horizontal">
+	   		
+				   	<div>
+					  <label class="checkbox-inline">
+					    <input name="cmdck" type="checkbox" id="cmd_ck1" value="1">
+					    Server1
+					  </label>
+					
+					
+					  <label class="checkbox-inline">
+					    <input name="cmdck" type="checkbox" id="cmd_ck2" value="2">
+					    Server2
+					  </label>
+					</div>
+	   		
+	   		    <textarea id="result" class="form-control" rows="5" readonly></textarea>
+	   		       		 	
+	   		 	  <div class="form-inline">
+	   		 	  			 <label class="sr-only" for="dumy">dumy</label>
+	   		 	  		 	 <input type="text" class="form-control" style="width: 94%" id="cmd" placeholder="Command">
+	   		 	  			 <button type="button" id="sendConsole" class="btn btn-default" style="width: 5.5%">Send</button>
+				  </div>
+	   		</form>
+	   </div>
    </div>
-
+   
+   
 
 <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
     <li id="standby"><a tabindex="-1" >fail over</a></li>
@@ -355,6 +388,7 @@
     <li><a tabindex="-1" href="#">memory info</a></li>
     <li><a tabindex="-1" href="#">setting</a></li>
     <li><a tabindex="-1" href="#">sync setting</a></li>
+    <li id="lock" data-jh-text="<a tabindex='-1' href='#'>unlock</a>"><a tabindex="-1" href="#">lock</a></li>
 </ul>
 
 
@@ -528,8 +562,12 @@
    
    <script>
 	var data="";
+	
 	var c=0;
-	var s_num=0;
+	
+	var s_num=0;	//서버 넘버
+	
+	var test=null; //임시	
 	 (function ($, window) {
 
 	    $.fn.contextMenu = function (settings) {
@@ -549,9 +587,11 @@
 	                if(e.currentTarget.className=='active')
 	                {
 	                	$("#standby").removeClass();
+	                	$("#lock").removeClass();
 	                }else
 	                {
 	                	$("#standby").addClass("disabled");
+	                	$("#lock").addClass("disabled");
 	                }
 	                //class="disabled"
 	                //open menu
@@ -616,7 +656,7 @@
 				   //$("#box")
 				  
 				   $("#adding").bind("click",review);
-				   
+				   $("#sendConsole").bind("click",cmdSend);
 				   $("#save_set").bind("click",save_setting);
 				   $("#sync_set").bind("click",sync_setting);
 				   $("#save_vip").bind("click",vip_save);
@@ -712,6 +752,13 @@
    				
    			$('#dataSyn').modal({backdrop: 'static'}) ;
    			$('#dataSyn').modal('show');
+   		}else if(cmd=='lock')
+   		{
+   			
+   			ssh_test(ip,"lock",s_num);
+   		}else if(cmd=='unlock')
+   		{
+   			ssh_test(ip,"unlock",s_num);
    		}
    }
    
@@ -875,6 +922,59 @@
 	   
    }
    
+   function cmdSend()
+   {
+	   var ck=getCheck("cmdck");
+	   
+	   var cmd=$("#cmd").val().trim();
+	   
+	   if(ck=="")
+	   {
+			alert("서버를 선택해주세요");
+			return;
+	   }
+	   
+	   	   	   
+	   $.ajax({
+	        url : "../../webConsole.tdo",
+	        type: "post",
+	        data:{
+	        	"cmd" : cmd,
+	        	"check" : ck
+	        },
+
+	        success : function(responseData){
+	            //$("#ajax").remove();
+	            //data=responseData;
+	            var txtarea=$("#result");
+	            
+	            console.log(responseData);
+	            
+	            txtarea.append(cmd+"\n");
+	            
+	            
+	            for(var j=1;j<=responseData.length;j++)
+            	{
+		            txtarea.append("Server IP : "+eval("responseData.ip"+j)+"\n");
+		            
+		            var dda=eval("responseData.result"+j);
+		            
+		            console.log(dda);
+		            
+		            for(var i=0;i<dda.length;i++)
+		            {
+		            	txtarea.append(dda[i]+"\n");
+		            }
+	            
+            	}
+	            
+	            
+	            $("#cmd").val("");
+
+	        }
+	    });
+   }
+   
    function getCheck(name)
    {  //$("input[name='synck']:checked")
 	   var cbox=$("input[name='"+name+"']:checked");
@@ -967,30 +1067,7 @@
 		            var data=responseData;
 		            console.log(data);
 		            console.log(box);
-		            if(cmd=='ip'){
-		            	if(data.length>1)
-		            	{
-		            		//box.children("h3").children("span").attr("class","label label-primary");
-		            		box.innerHTML=box.innerHTML.replace("label label-danger","label label-primary");
-		            		box.setAttribute("class",'active');
-		            		//console.log("ㅋㅋㅋㅋ");
-		            	}else
-		            	{
-		            		//box.children("h3").children("span").attr("class","label label-danger");
-		            		box.innerHTML=box.innerHTML.replace("label label-primary","label label-danger");
-		            		box.removeAttribute("class");
-		            		//console.log("ㅋㅋㅋㅋ2");
-		            	}
-		            	
-		            	if(data.sync_state==true)
-		            	{
-		            		$("#data_sync").button("reset");
-		            	}else
-		            	{
-		            		$("#data_sync").button("sh");
-		            	}
-		            	
-		            }else if(cmd=="cpu")
+		            if(cmd=="cpu")
 		            {
 		            	alert(data.data);	
 		            }else if(cmd=="os")
@@ -1005,6 +1082,12 @@
 		            }else if(cmd=="standby")
 		            {
 		            	alert("성공했음");	
+		            }else if(cmd="lock")
+		            {
+		            	alert("lock 성공");
+		            }else if(cmd="unlock")
+		            {
+		            	alert("unlock 성공");
 		            }
 		        }
 		    });
@@ -1013,21 +1096,117 @@
 		
    }
    
-   function cpuinfo()
+   function sync_stat()
    {
-	   ssh_test('192.168.23.130',"cpu");
+	   $.ajax({
+	        url : "../../sync_stat.tdo",
+	        type: "get",
+	        async: false,
+	        success : function(responseData){
+	        	console.log("동기화"+responseData)
+	        	if(responseData==1)
+            	{
+	        		console.log("1이면 동기화 중이지 않은거");
+            		$("#data_sync").button("reset");
+            	}else
+            	{
+            		console.log("0이면 동기화 중인거");
+            		$("#data_sync").button("sh");
+            	}
+	        	
+	        }
+	   });
+   }
+   
+   function lock_stat()
+   {
+	   $.ajax({
+	        url : "../../lock_stat.tdo",
+	        type: "get",
+	        async: false,
+	        success : function(responseData){
+	        	
+	        	console.log(responseData);
+	        	console.log("락"+responseData.lock_state);
+	        	
+	        	if(responseData.lock_stat=="1")
+            	{
+	        		console.log("1이면 unlock 상태");
+	        		$("#lock").button("reset");
+            	}else
+            	{
+            		console.log("0이면 lock 상태");
+            		$("#lock").button("jh");
+            	}
+	        	
+	        	
+	        	var linkstat=$("#link_stat");
+	        	var linksolid=$("#link_solid");
+	        	
+	        	if(responseData.link_status>=2)
+	        	{
+	        		linkstat.text("Link Success");
+	        		linkstat.removeClass();
+	        		linkstat.toggleClass("label label-success");
+	        		linksolid.attr("style","border: solid 5px green");
+	        	}else
+	        	{
+	        		linkstat.text("Link Fail");
+	        		linkstat.removeClass();
+	        		linkstat.toggleClass("label label-danger");
+	        		linksolid.attr("style","border: solid 5px red");
+	        	}
+	        		
+	        		
+	        	
+	        	
+	     	   for(var i=0;i<$("div[id*=imagebox]").length;i++)
+			   	{
+			   		   //var temp=$("#box").children()[i];
+			   		   var temp=$("div[id*=imagebox]")[i];
+			   		   var ip=temp.innerText.trim();
+			   		   console.log(ip);
+			   		   
+			   		   if(ip==responseData.ip)
+			   			{
+			   				temp.innerHTML=temp.innerHTML.replace("label label-danger","label label-primary");
+	            			temp.setAttribute("class",'active');
+			   			}else
+			   			{
+			   				temp.innerHTML=temp.innerHTML.replace("label label-primary","label label-danger");
+		            		temp.removeAttribute("class");
+			   			}
+			   		   
+			   		   
+			   	}
+	        	
+	        	/* if(data.length>1)
+	            	{
+	            		//box.children("h3").children("span").attr("class","label label-primary");
+	            		box.innerHTML=box.innerHTML.replace("label label-danger","label label-primary");
+	            		box.setAttribute("class",'active');
+	            		//console.log("ㅋㅋㅋㅋ");
+	            }else
+	            	{
+	            		//box.children("h3").children("span").attr("class","label label-danger");
+	            		box.innerHTML=box.innerHTML.replace("label label-primary","label label-danger");
+	            		box.removeAttribute("class");
+	            		//console.log("ㅋㅋㅋㅋ2");
+	            	} */
+	            	
+	            	
+	            }
+	        	
+	        
+	   });
    }
    
    
    function review()
    {
-	   for(var i=0;i<$("#box").children.length;i++)
-		{
-		   var temp=$("#box").children()[i];
-		   var ip=temp.innerText.trim();
-		   console.log(ip);
-		   var data=ssh_test(ip,"ip",i+1,temp)
-		}
+
+	   sync_stat();
+	   lock_stat();
    }
    
    function sqltest()
@@ -1081,6 +1260,7 @@
 	       		//lb="<h3><span class='label label-primary' align='left'>"+ip+"</span></h3>";
 	       		lb="<h3><span class='label label-primary'>"+ip+"</span></h3>";
 	       		div.align="left";
+	       		$("#linkbox").before(div);
 	       }
 	       	else{
 	       		//img.align="right"	
@@ -1088,11 +1268,13 @@
 	       		lb="<h3><span class='label label-primary'>"+ip+"</span></h3>";
 	       		//lb="<h3><span id=lblb"+c+" class='label label-primary'>"+ip+"</span></h3>";
 	       		div.align="right";
+	       		$("#linkbox").after(div);
+	       		
 	       	}
 	       //document.body.appendChild(img);
 	       //$("#imagebox").append(img);
 	       //$("#imagebox").append(lb);
-	       $("#box").append(div);
+	       //$("#box").append(div);
 	       $("#imagebox_"+c+"").append(img);
 	       $("#imagebox_"+c+"").append(lb);
 	       $("#imagebox_"+c+"").contextMenu({
